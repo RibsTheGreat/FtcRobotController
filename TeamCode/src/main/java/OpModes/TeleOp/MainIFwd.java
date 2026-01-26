@@ -29,7 +29,7 @@ public class MainIFwd extends OpMode {
     Toggle shooterToggle;
     Toggle beltToggle;
 
-    private final int SHOOTER_VELOCITY = 700;
+    private final int SHOOTER_VELOCITY = 750;
 
     private boolean lastDpad_UpState;
     private boolean lastDpad_DownState;
@@ -41,9 +41,11 @@ public class MainIFwd extends OpMode {
         backLeftMotor = hardwareMap.get(DcMotorEx.class, "backLeftMotor");
         frontRightMotor = hardwareMap.get(DcMotorEx.class, "frontRightMotor");
         backRightMotor = hardwareMap.get(DcMotorEx.class, "backRightMotor");
+
         beltMotor = hardwareMap.get(DcMotorEx.class, "beltMotor");
         shooterMotorOne = hardwareMap.get(DcMotorEx.class, "shooterMotorOne");
         shooterMotorTwo = hardwareMap.get(DcMotorEx.class, "shooterMotorTwo");
+
         liftMotor = hardwareMap.get(DcMotorEx.class, "liftMotor");
 
         drive = new Drive(frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor, imu);
@@ -65,10 +67,19 @@ public class MainIFwd extends OpMode {
         shooterMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
         shooterMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        double p = 0.1;
+        double i = 0.0;
+        double d = 0.0;
+        double f = 11.7;
+
+        shooterMotorOne.setVelocityPIDFCoefficients(p, i, d, f);
+        shooterMotorTwo.setVelocityPIDFCoefficients(p, i, d, f);
+
 
         //intakeToggle = new Toggle(false);
         shooterToggle = new Toggle(false);
         beltToggle = new Toggle(false);
+
 
 
         telemetry.addData("Status:", "Initialized");
@@ -96,7 +107,7 @@ public class MainIFwd extends OpMode {
 
 
             if(gamepad1.y){
-                if (shooterMotorOne.getVelocity() >= 680 && shooterMotorOne.getVelocity() <= 720 && shooterMotorTwo.getVelocity() >= 680 && shooterMotorTwo.getVelocity() <= 720) {
+                if (shooterMotorOne.getVelocity() >= 730 && shooterMotorOne.getVelocity() <= 770 && shooterMotorTwo.getVelocity() >= 730 && shooterMotorTwo.getVelocity() <= 770) {
                     beltMotor.setPower(0.35);
                 }
                 else {
@@ -118,10 +129,10 @@ public class MainIFwd extends OpMode {
             }
 
             if(gamepad1.dpad_up){
-                liftMotor.setPower(.5);
+                liftMotor.setPower(1);
             }
             else if (gamepad1.dpad_down) {
-                liftMotor.setPower(-.5);
+                liftMotor.setPower(-1);
             }
             else{
                 liftMotor.setPower(0);
