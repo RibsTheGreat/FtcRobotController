@@ -67,13 +67,18 @@ public class MainIFwd extends OpMode {
         shooterMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
         shooterMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        double p = 0.1;
-        double i = 0.0;
-        double d = 0.0;
-        double f = 11.7;
+        double p1 = 1;
+        double i1 = 0.0;
+        double d1 = 0.0;
+        double f1 = 13;
 
-        shooterMotorOne.setVelocityPIDFCoefficients(p, i, d, f);
-        shooterMotorTwo.setVelocityPIDFCoefficients(p, i, d, f);
+        double p2 = 1;
+        double i2 = 0.0;
+        double d2 = 0.5;
+        double f2 = 13;
+
+        shooterMotorOne.setVelocityPIDFCoefficients(p1, i1, d1, f1);
+        shooterMotorTwo.setVelocityPIDFCoefficients(p2, i2, d2, f2);
 
 
         //intakeToggle = new Toggle(false);

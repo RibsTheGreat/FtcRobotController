@@ -129,6 +129,19 @@ public class HandBuiltBlue extends OpMode {
         shooterMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
         shooterMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        double p1 = 1;
+        double i1 = 0.0;
+        double d1 = 0.0;
+        double f1 = 13;
+
+        double p2 = 1;
+        double i2 = 0.0;
+        double d2 = 0.5;
+        double f2 = 13;
+
+        shooterMotorOne.setVelocityPIDFCoefficients(p1, i1, d1, f1);
+        shooterMotorTwo.setVelocityPIDFCoefficients(p2, i2, d2, f2);
+
 
     }
 
