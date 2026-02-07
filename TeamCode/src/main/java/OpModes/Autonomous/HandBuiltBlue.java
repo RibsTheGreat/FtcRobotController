@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import Components.Drive;
 
@@ -39,7 +41,7 @@ public class HandBuiltBlue extends OpMode {
                     backLeftMotor.setPower(-.3);
                     backRightMotor.setPower(-.3);
                 }
-                else if (System.currentTimeMillis() - moveBackTimer >= 250){
+                else if (System.currentTimeMillis() - moveBackTimer >= 450){
                     setPathState(1);
                     frontLeftMotor.setPower(0);
                     frontRightMotor.setPower(0);
@@ -52,8 +54,8 @@ public class HandBuiltBlue extends OpMode {
 
                 if(shootTimer == 0) {
                     shootTimer = System.currentTimeMillis();
-                    shooterMotorOne.setVelocity(750);
-                    shooterMotorTwo.setVelocity(750);
+                    shooterMotorOne.setVelocity(765);
+                    shooterMotorTwo.setVelocity(765);
                 }
                 else if (System.currentTimeMillis() - shootTimer >= 24000){
                     setPathState(2);
@@ -62,7 +64,7 @@ public class HandBuiltBlue extends OpMode {
                     beltMotor.setPower(0);
                 }
                 else {
-                    if (shooterMotorOne.getVelocity() >= 730 && shooterMotorOne.getVelocity() <= 770 && shooterMotorTwo.getVelocity() >= 730 && shooterMotorTwo.getVelocity() <= 770){
+                    if (shooterMotorOne.getVelocity() >= 730 && shooterMotorOne.getVelocity() <= 790 && shooterMotorTwo.getVelocity() >= 730 && shooterMotorTwo.getVelocity() <= 790){
                         beltMotor.setPower(.35);
                     }
                     else beltMotor.setPower(0);
@@ -79,7 +81,7 @@ public class HandBuiltBlue extends OpMode {
                     backLeftMotor.setPower(-.7);
                     backRightMotor.setPower(.7);
                 }
-                else if (System.currentTimeMillis() - moveRightTimer >= 500){
+                else if (System.currentTimeMillis() - moveRightTimer >= 600){
                     setPathState(3);
                     frontLeftMotor.setPower(0);
                     frontRightMotor.setPower(0);
@@ -129,18 +131,13 @@ public class HandBuiltBlue extends OpMode {
         shooterMotorOne.setDirection(DcMotorEx.Direction.REVERSE);
         shooterMotorTwo.setDirection(DcMotorSimple.Direction.FORWARD);
 
-        double p1 = 1;
-        double i1 = 0.0;
-        double d1 = 0.0;
-        double f1 = 13;
-
-        double p2 = 1;
-        double i2 = 0.0;
-        double d2 = 0.5;
-        double f2 = 13;
+        double p1 = .08;
+        double i1 = 0;
+        double d1 = 0;
+        double f1 = (13.5 * 12)/getBatteryVoltage(hardwareMap);
 
         shooterMotorOne.setVelocityPIDFCoefficients(p1, i1, d1, f1);
-        shooterMotorTwo.setVelocityPIDFCoefficients(p2, i2, d2, f2);
+        shooterMotorTwo.setVelocityPIDFCoefficients(p1, i1, d1, f1);
 
 
     }
@@ -153,6 +150,15 @@ public class HandBuiltBlue extends OpMode {
         telemetry.addData("Shooter motor 2 spd", shooterMotorTwo.getVelocity());
         telemetry.addData("Shooter time", (System.currentTimeMillis()-shootTimer)/1000);
         telemetry.update();
+    }
+
+    private static double getBatteryVoltage(HardwareMap hardwareMap){
+        double minVoltage = Double.POSITIVE_INFINITY;
+        for (VoltageSensor sensor : hardwareMap.voltageSensor){
+            double v = sensor.getVoltage();
+            if (v > 0) minVoltage = Math.min(minVoltage, v);
+        }
+        return (minVoltage == Double.POSITIVE_INFINITY) ? 0.0 :minVoltage;
     }
 
 
