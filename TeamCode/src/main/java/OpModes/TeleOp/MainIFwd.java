@@ -33,6 +33,10 @@ public class MainIFwd extends OpMode {
 
     private final int SHOOTER_VELOCITY = 765;
 
+    double p1 = 1;
+    double i1 = 0;
+    double d1 = 0;
+
     private boolean lastDpad_UpState;
     private boolean lastDpad_DownState;
 
@@ -72,10 +76,9 @@ public class MainIFwd extends OpMode {
         double p1 = .08;
         double i1 = 0;
         double d1 = 0;
-        double f1 = (13.5 * 12)/getBatteryVoltage(hardwareMap);
 
-        shooterMotorOne.setVelocityPIDFCoefficients(p1, i1, d1, f1);
-        shooterMotorTwo.setVelocityPIDFCoefficients(p1, i1, d1, f1);
+        shooterMotorOne.setVelocityPIDFCoefficients(p1, i1, d1, 13.5);
+        shooterMotorTwo.setVelocityPIDFCoefficients(p1, i1, d1, 13.5);
 
 
         //intakeToggle = new Toggle(false);
@@ -93,9 +96,9 @@ public class MainIFwd extends OpMode {
             telemetry.addData("Status", "Running");
 
 
-                Vector2 driveDirection = new Vector2(gamepad1.left_stick_x, gamepad1.left_stick_y);
-                float driveRotation = gamepad1.right_stick_x;
-                drive.moveInDirection(driveDirection, driveRotation, 1.0f, telemetry);
+            Vector2 driveDirection = new Vector2(gamepad1.left_stick_x, gamepad1.left_stick_y);
+            float driveRotation = gamepad1.right_stick_x;
+            drive.moveInDirection(driveDirection, driveRotation, 1.0f, telemetry);
 
             telemetry.addData("Target Ticks", SHOOTER_VELOCITY);
 
@@ -106,6 +109,17 @@ public class MainIFwd extends OpMode {
             telemetry.addData("Shooting toggle", shooterToggle.getState());
             telemetry.addData("Shooter Motor 1 Ticks", shooterMotorOne.getVelocity());
             telemetry.addData("Shooter Motor 2 Ticks", shooterMotorTwo.getVelocity());
+            // shooter running
+            double voltage = getBatteryVoltage();
+
+            double compensatedF = 13.5 * (12.0 / voltage);
+
+            shooterMotorOne.setVelocityPIDFCoefficients(p1, i1, d1, compensatedF);
+            shooterMotorTwo.setVelocityPIDFCoefficients(p1, i1, d1, compensatedF);
+
+            telemetry.addData("Battery V", voltage);
+            telemetry.addData("Shooter F", compensatedF);
+
 
 
             if(gamepad1.y){
@@ -155,12 +169,11 @@ public class MainIFwd extends OpMode {
 
     }
 
-    private static double getBatteryVoltage(HardwareMap hardwareMap){
-        double minVoltage = Double.POSITIVE_INFINITY;
-        for (VoltageSensor sensor : hardwareMap.voltageSensor){
+    private double getBatteryVoltage(){
+        for (VoltageSensor sensor : hardwareMap.voltageSensor) {
             double v = sensor.getVoltage();
-            if (v > 0) minVoltage = Math.min(minVoltage, v);
+            if (v > 11.0) return v; // ignore 5V logic rail
         }
-        return (minVoltage == Double.POSITIVE_INFINITY) ? 0.0 :minVoltage;
+        return 12.0; // safe fallback
     }
 }
